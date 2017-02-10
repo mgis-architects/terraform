@@ -7,9 +7,9 @@
 
 Select the latest version...
 
-`wget -O terraform_0.8.4_linux_amd64.zip https://releases.hashicorp.com/terraform/0.8.4/terraform_0.8.4_linux_amd64.zip
+`wget -O terraform_0.8.4_linux_amd64.zip https://releases.hashicorp.com/terraform/0.8.4/terraform_0.8.4_linux_amd64.zip`
 
-unzip -q -d /usr/local/bin terraform_0.8.4_linux_amd64.zip`
+`unzip -q -d /usr/local/bin terraform_0.8.4_linux_amd64.zip`
 
 ## Read about the Azure provider
 Read https://www.terraform.io/docs/providers/azurerm/
