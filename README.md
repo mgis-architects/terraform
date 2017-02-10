@@ -11,8 +11,9 @@ Select the latest version...
 
 `unzip -q -d /usr/local/bin terraform_0.8.4_linux_amd64.zip`
 
-## Read about the Azure provider
-Read https://www.terraform.io/docs/providers/azurerm/
+## Read about the provider
+
+e.g. Read https://www.terraform.io/docs/providers/azurerm/
 
 ## Set environment variables
 `export TF_VAR_tenantid=YourAzureTenantId`
