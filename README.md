@@ -16,6 +16,7 @@ Select the latest version...
 e.g. Read https://www.terraform.io/docs/providers/azurerm/
 
 ## Set environment variables
+### For Azure:
 `export TF_VAR_tenantid=YourAzureTenantId`
 
 `export TF_VAR_appid=YourAzureADApplicationId`
