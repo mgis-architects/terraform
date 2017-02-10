@@ -16,8 +16,11 @@ Read https://www.terraform.io/docs/providers/azurerm/
 
 ## Set environment variables
 `export TF_VAR_tenantid=YourAzureTenantId`
+
 `export TF_VAR_appid=YourAzureADApplicationId`
+
 `export TF_VAR_apppassword=YourAzureADApplicationKey`
+
 `export TF_VAR_subscriptionid=YourAzureSubscriptionId`
 
 ## Create the infrastructure
