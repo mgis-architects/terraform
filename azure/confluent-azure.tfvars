@@ -1,0 +1,13 @@
+location="West Europe"
+rg_name="atu045-confluent-rg"
+vlan_name="atu045-vlan"
+subnet_name="atu045-subnet"
+cluster_size=3
+prefix="atu045confluent"
+storage_acc="atu045confluentsa"
+adminuser="atu045"
+vmsize="Standard_DS3"
+vmpublisher = "RedHat"
+vmoffer = "RHEL"
+vmsku = "7.3"
+vmversion = "latest"
