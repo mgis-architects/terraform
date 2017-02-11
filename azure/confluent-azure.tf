@@ -8,8 +8,11 @@ variable "apppassword" {}
 variable "tenantid" {}
 variable "location" {}
 variable "rg_name" {}
-variable "vlan_name" {}
+#variable "vlan_name" {}
+variable "vnet_rg_name" {}
+variable "vnet_name" {}
 variable "subnet_name" {}
+variable "address_prefix" {}
 variable "cluster_size" {}
 variable "prefix" {}
 variable "storage_acc" {}
@@ -40,7 +43,7 @@ resource "azurerm_resource_group" "resource_group" {
 	prevent_destroy=true
     }
 }
-
+ 
 resource "azurerm_availability_set" "availability_group" {
     name = "${var.prefix}-ag"
     location = "${var.location}"
@@ -51,19 +54,19 @@ resource "azurerm_availability_set" "availability_group" {
 #######################################################################################################
 # Network
 #######################################################################################################
-# Create a virtual network in the web_servers resource group
-resource "azurerm_virtual_network" "network" {
-  name                = "${var.vlan_name}"
-  address_space       = ["10.6.0.0/16"]
-  location            = "${var.location}"
-  resource_group_name = "${azurerm_resource_group.resource_group.name}"
-}
+# # Create a virtual network in the web_servers resource group
+# resource "azurerm_virtual_network" "network" {
+#   name                = "${var.vlan_name}"
+#   address_space       = ["10.6.0.0/16"]
+#   location            = "${var.location}"
+#   resource_group_name = "${azurerm_resource_group.resource_group.name}"
+# }
 
 resource "azurerm_subnet" "subnet" {
   name                 = "${var.subnet_name}"
-  resource_group_name  = "${azurerm_resource_group.resource_group.name}"
-  virtual_network_name = "${azurerm_virtual_network.network.name}"
-  address_prefix       = "10.6.0.0/24"
+  resource_group_name  = "${var.vnet_rg_name}"
+  virtual_network_name = "${var.vnet_name}"
+  address_prefix       = "${var.address_prefix}"
 }
 
 resource "azurerm_network_interface" "nic" {
