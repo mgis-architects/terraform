@@ -1,0 +1,17 @@
+# Reference existing vnet
+vnet_rg_name="atu045dev_rg"
+vnet_name="atu045dev-VN"
+subnet_name="atu045dev-build"
+address_prefix="10.135.2.0/24"
+#
+location="West Europe"
+rg_name="atu045-build-rg"
+prefix="atu045build"
+storage_acc="atu045buildsa"
+storage_type="Premium_LRS"
+adminuser="atu045"
+vmsize="Standard_DS2"
+vmpublisher = "RedHat"
+vmoffer = "RHEL"
+vmsku = "7.3"
+vmversion = "latest"
