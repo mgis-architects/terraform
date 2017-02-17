@@ -3,6 +3,8 @@
 ## 100GB /u01 disk
 ## 3 x 200GB ASM datadg disks
 ## 1 x 150GB ASM recodg disk
+##
+## Customised ini file must be in your home directory
 
 #######################################################################################################
 # Variables
@@ -184,16 +186,19 @@ resource "azurerm_virtual_machine" "vm" {
   }
 
   provisioner "file" {
-     source = "../../../buildServer/buildServer.sh"
-     destination = "/home/${var.adminuser}/buildServer.sh"
-     # https://www.terraform.io/docs/provisioners/connection.html
-     # https://www.terraform.io/docs/configuration/interpolation.html host = ${self.private_ip_address}
-     # http://stackoverflow.com/questions/35381229/why-cant-terraform-ssh-in-to-ec2-instance-using-supplied-example agent=false
+     source = "../../../oracledb/oracledb-build.sh"
+     destination = "/home/${var.adminuser}/oracledb-build.sh"
+  }
+  
+  # customised parameter file ***taken from home directory***
+  provisioner "file" {
+     source = "~/oracledb-build.ini"
+     destination = "/home/${var.adminuser}/oracledb-build.ini"
   }
     
   provisioner "remote-exec" {
      inline = [ 
-        "sudo /bin/bash /home/${var.adminuser}/buildServer.sh 2>&1 |tee /home/${var.adminuser}/remoteExec.log"
+        "sudo /bin/bash /home/${var.adminuser}/oracledb-build.sh /home/${var.adminuser}/oracledb-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.oracledb-build.log"
       ]
   }
   
