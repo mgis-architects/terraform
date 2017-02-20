@@ -190,15 +190,39 @@ resource "azurerm_virtual_machine" "vm" {
      destination = "/home/${var.adminuser}/oracledb-build.sh"
   }
   
+  provisioner "file" {
+     source = "../../../ogg/ogg-build.sh"
+     destination = "/home/${var.adminuser}/ogg-build.sh"
+  }
+  
+  provisioner "file" {
+     source = "../../../ogg4bd/ogg4bd-build.sh"
+     destination = "/home/${var.adminuser}/ogg4bd-build.sh"
+  }
+  
   # customised parameter file ***taken from home directory***
   provisioner "file" {
      source = "~/oracledb-build.ini"
      destination = "/home/${var.adminuser}/oracledb-build.ini"
   }
     
+  # customised parameter file ***taken from home directory***
+  provisioner "file" {
+     source = "~/ogg-build.ini"
+     destination = "/home/${var.adminuser}/ogg-build.ini"
+  }
+
+  # customised parameter file ***taken from home directory***
+  provisioner "file" {
+     source = "~/ogg4bd-build.ini"
+     destination = "/home/${var.adminuser}/ogg4bd-build.ini"
+  }
+    
   provisioner "remote-exec" {
      inline = [ 
-        "sudo /bin/bash /home/${var.adminuser}/oracledb-build.sh /home/${var.adminuser}/oracledb-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.oracledb-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/oracledb-build.sh /home/${var.adminuser}/oracledb-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.oracledb-build.log",
+        "sudo /bin/bash /home/${var.adminuser}/ogg-build.sh /home/${var.adminuser}/ogg-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg-build.log",
+        "sudo /bin/bash /home/${var.adminuser}/ogg4bd-build.sh /home/${var.adminuser}/ogg4bd-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg4bd-build.log"
       ]
   }
   
