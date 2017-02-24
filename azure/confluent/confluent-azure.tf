@@ -84,7 +84,7 @@ resource "azurerm_network_interface" "nic_A" {
     name                          = "${var.prefix}-ip-zk1"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address            = "10.9.3.4"
+    private_ip_address            = "${var.subnet_prefix}.4"
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
   }
 }
