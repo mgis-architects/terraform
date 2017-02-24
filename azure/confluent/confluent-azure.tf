@@ -306,13 +306,13 @@ resource "azurerm_virtual_machine" "zkvm1" {
    } 
 
    provisioner "file" { 
-     source = "~/kafka-build.ini" 
-     destination = "/home/${var.adminuser}/kafka-build.ini" 
+     source = "~/confluent-build.ini" 
+     destination = "/home/${var.adminuser}/confluent-build.ini" 
    } 
 
    provisioner "remote-exec" { 
      inline = [  
-        "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/kafka-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
      ] 
    } 
 
@@ -381,13 +381,13 @@ resource "azurerm_virtual_machine" "zkvm2" {
    }
 
    provisioner "file" {
-     source = "~/kafka-build.ini"
-     destination = "/home/${var.adminuser}/kafka-build.ini"
+     source = "~/confluent-build.ini"
+     destination = "/home/${var.adminuser}/confluent-build.ini"
    }
 
    provisioner "remote-exec" {
      inline = [
-        "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/kafka-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
      ]
    }
 
@@ -453,13 +453,13 @@ resource "azurerm_virtual_machine" "zkvm3" {
    }
 
    provisioner "file" {
-     source = "~/kafka-build.ini"
-     destination = "/home/${var.adminuser}/kafka-build.ini"
+     source = "~/confluent-build.ini"
+     destination = "/home/${var.adminuser}/confluent-build.ini"
    }
 
    provisioner "remote-exec" {
      inline = [
-        "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/kafka-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
      ]
    }
 
@@ -527,13 +527,13 @@ resource "azurerm_virtual_machine" "prvm1" {
    }
 
    provisioner "file" {
-     source = "~/kafka-build.ini"
-     destination = "/home/${var.adminuser}/kafka-build.ini"
+     source = "~/confluent-build.ini"
+     destination = "/home/${var.adminuser}/confluent-build.ini"
    }
 
    provisioner "remote-exec" {
      inline = [
-        "sudo /bin/bash /home/${var.adminuser}/schema-build.sh /home/${var.adminuser}/kafka-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.schema-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/schema-build.sh /home/${var.adminuser}/confluent-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.schema-build.log"
      ]
    }
 
@@ -599,13 +599,13 @@ resource "azurerm_virtual_machine" "prvm2" {
    }
 
    provisioner "file" {
-     source = "~/kafka-build.ini"
-     destination = "/home/${var.adminuser}/kafka-build.ini"
+     source = "~/confluent-build.ini"
+     destination = "/home/${var.adminuser}/confluent-build.ini"
    }
 
    provisioner "remote-exec" {
      inline = [
-        "sudo /bin/bash /home/${var.adminuser}/schema-build.sh /home/${var.adminuser}/kafka-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.schema-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/schema-build.sh /home/${var.adminuser}/confluent-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.schema-build.log"
      ]
    }
 
@@ -671,13 +671,13 @@ resource "azurerm_virtual_machine" "ccvm1" {
    }
 
    provisioner "file" {
-     source = "~/kafka-build.ini"
-     destination = "/home/${var.adminuser}/kafka-build.ini"
+     source = "~/confluent-build.ini"
+     destination = "/home/${var.adminuser}/confluent-build.ini"
    }
 
    provisioner "remote-exec" {
      inline = [
-        "sudo /bin/bash /home/${var.adminuser}/cc-build.sh /home/${var.adminuser}/kafka-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.cc-build.log"
+        "sudo /bin/bash /home/${var.adminuser}/cc-build.sh /home/${var.adminuser}/confluent-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.cc-build.log"
      ]
    }
 
