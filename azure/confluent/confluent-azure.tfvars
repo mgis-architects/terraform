@@ -2,6 +2,7 @@
 vnet_rg_name="<existing_resource_group>"
 vnet_name="<vnet_within_existing_resource_group>"
 subnet_name="<new_subnet_name_to_create_within_vnet>"
+subnet_prefix="10.9.3"
 address_prefix="10.9.3.0/24"
 #
 location="West Europe"

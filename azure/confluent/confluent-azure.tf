@@ -96,7 +96,7 @@ resource "azurerm_network_interface" "nic_B" {
     name                          = "${var.prefix}-ip-zk2"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address            = "10.9.3.5"
+    private_ip_address            = "${var.subnetprefix}.5"
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
   }
 }
@@ -109,7 +109,7 @@ resource "azurerm_network_interface" "nic_C" {
     name                          = "${var.prefix}-ip-zk3"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address            = "10.9.3.6"
+    private_ip_address            = "${var.subnetprefix}.6"
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
   }
 }
@@ -123,7 +123,7 @@ resource "azurerm_network_interface" "nic_D" {
     name                          = "${var.prefix}-ip-pr1"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address            = "10.9.3.7"
+    private_ip_address            = "${var.subnetprefix}.7"
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
   }
 }
@@ -136,7 +136,7 @@ resource "azurerm_network_interface" "nic_E" {
     name                          = "${var.prefix}-ip-pr2"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address            = "10.9.3.8"
+    private_ip_address            = "${var.subnetprefix}.8"
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
   }
 }
@@ -149,7 +149,7 @@ resource "azurerm_network_interface" "nic_F" {
     name                          = "${var.prefix}-ip-cc1"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address            = "10.9.3.9"
+    private_ip_address            = "${var.subnetprefix}.9"
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
   }
 }
@@ -292,7 +292,7 @@ resource "azurerm_virtual_machine" "zkvm1" {
 
   connection {
     user = "${var.adminuser}"
-    host = "10.9.3.4"
+    host = "${var.subnetprefix}.4"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
     # Failed to read key ... no key found
@@ -367,7 +367,7 @@ resource "azurerm_virtual_machine" "zkvm2" {
 
   connection {
     user = "${var.adminuser}"
-    host = "10.9.3.5"
+    host = "${var.subnetprefix}.5"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
     # Failed to read key ... no key found
