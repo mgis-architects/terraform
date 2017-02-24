@@ -440,7 +440,7 @@ resource "azurerm_virtual_machine" "zkvm3" {
 
   connection {
     user = "${var.adminuser}"
-    host = "10.9.3.6"
+    host = "${var.subnet_prefix}.6"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
     # Failed to read key ... no key found
@@ -514,7 +514,7 @@ resource "azurerm_virtual_machine" "prvm1" {
 
   connection {
     user = "${var.adminuser}"
-    host = "10.9.3.7"
+    host = "${var.subnet_prefix}.7"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
     # Failed to read key ... no key found
@@ -586,7 +586,7 @@ resource "azurerm_virtual_machine" "prvm2" {
 
   connection {
     user = "${var.adminuser}"
-    host = "10.9.3.8"
+    host = "${var.subnet_prefix}.8"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
     # Failed to read key ... no key found
@@ -658,7 +658,7 @@ resource "azurerm_virtual_machine" "ccvm1" {
 
   connection {
     user = "${var.adminuser}"
-    host = "10.9.3.9"
+    host = "${var.subnet_prefix}.9"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
     # Failed to read key ... no key found
