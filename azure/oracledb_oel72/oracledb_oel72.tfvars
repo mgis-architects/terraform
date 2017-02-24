@@ -1,0 +1,17 @@
+# Reference existing vnet
+vnet_rg_name="atu045dev_rg"
+vnet_name="atu045dev-VN"
+subnet_name="atu045dev-oradb2"
+address_prefix="10.135.22.0/24"
+#
+location="West Europe"
+rg_name="atu045-oradb2-rg"
+prefix="atu045oradb2"
+storage_acc="atu045oradb2sa"
+storage_type="Premium_LRS"
+adminuser="atu045"
+vmsize="Standard_DS3_v2"
+vmpublisher = "Oracle"
+vmoffer = "Oracle-Linux"
+vmsku = "7.2"
+vmversion = "latest"

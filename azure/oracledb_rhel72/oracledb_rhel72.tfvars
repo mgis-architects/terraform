@@ -1,0 +1,17 @@
+# Reference existing vnet
+vnet_rg_name="atu045dev_rg"
+vnet_name="atu045dev-VN"
+subnet_name="atu045dev-oradb3"
+address_prefix="10.135.13.0/24"
+#
+location="West Europe"
+rg_name="atu045-oradb3-rg"
+prefix="atu045oradb3"
+storage_acc="atu045oradb3sa"
+storage_type="Premium_LRS"
+adminuser="atu045"
+vmsize="Standard_DS3_v2"
+vmpublisher = "RedHat"
+vmoffer = "RHEL"
+vmsku = "7.2"
+vmversion = "latest"

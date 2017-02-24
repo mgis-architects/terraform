@@ -161,36 +161,28 @@ resource "azurerm_virtual_machine" "vm" {
     }
   }
 
+  connection {
+    user = "${var.adminuser}"
+    host = "${azurerm_network_interface.nic.private_ip_address}"
+    agent = false
+    private_key = "${file("~/.ssh/id_rsa")}"
+    # Failed to read key ... no key found 
+    timeout = "30s"
+  }
+
   provisioner "file" {
      source = "buildServer.sh"
      destination = "/tmp/buildServer.sh"
      # https://www.terraform.io/docs/provisioners/connection.html
      # https://www.terraform.io/docs/configuration/interpolation.html host = ${self.private_ip_address}
      # http://stackoverflow.com/questions/35381229/why-cant-terraform-ssh-in-to-ec2-instance-using-supplied-example agent=false
-     connection {
-        user = "atu045"
-        host = "${azurerm_network_interface.nic.private_ip_address}"
-        agent = false
-        # private_key = "${file("~/.ssh/terra_key.pub")}"
-        # Failed to read key ... no key found 
-        timeout = "30s"
-      }
-
-     }
+  }
     
   provisioner "remote-exec" {
      inline = [ 
-        "sudo /bin/bash /tmp/bashInstaller.sh 2>&1 |tee /var/log/remoteExec.log"
+        "sudo /bin/bash /tmp/buildServer.sh 2>&1 |tee /home/${var.adminuser}/remoteExec.log"
       ]
-     connection {
-        user = "atu045"
-        host = "${azurerm_network_interface.nic.private_ip_address}"
-        agent = false
-        # private_key = "${file("~/.ssh/terra_key.pub")}"
-        timeout = "30s"
-      }
   }
-
   
 #   tags {
 #      prefix = "${var.prefix}"
