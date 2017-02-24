@@ -1,7 +1,7 @@
 # Reference existing vnet
-vnet_rg_name="<userid>-dev"
-vnet_name="<userid>-dev-vnet"
-subnet_name="<userid>-dev-subnet1"
+vnet_rg_name="<existing_resource_group>"
+vnet_name="<vnet_within_existing_resource_group>"
+subnet_name="<new_subnet_name_to_create_within_vnet>"
 address_prefix="10.9.3.0/24"
 #
 location="West Europe"
