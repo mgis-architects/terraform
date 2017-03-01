@@ -149,6 +149,20 @@ resource "azurerm_lb_rule" "load_balancer_https_rule" {
   depends_on                     = ["azurerm_lb_probe.load_balancer_probe"]
 }
 
+resource "azurerm_lb_rule" "load_balancer_cc_rule" {
+  location                       = "${var.location}"
+  resource_group_name            = "${azurerm_resource_group.resource_group.name}"
+  loadbalancer_id                = "${azurerm_lb.load_balancer.id}"
+  name                           = "ControlCenterRule"
+  protocol                       = "Tcp"
+  frontend_port                  = 9021
+  backend_port                   = 9021
+  frontend_ip_configuration_name = "${var.prefix}_pubip-frontend"
+  backend_address_pool_id        = "${azurerm_lb_backend_address_pool.backend_pool.id}"
+  probe_id                       = "${azurerm_lb_probe.load_balancer_cc_probe.id}"
+  depends_on                     = ["azurerm_lb_probe.load_balancer_cc_probe"]
+}
+
 resource "azurerm_lb_probe" "load_balancer_probe" {
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.resource_group.name}"
@@ -157,6 +171,13 @@ resource "azurerm_lb_probe" "load_balancer_probe" {
   port                = 80
 }  
 
+resource "azurerm_lb_probe" "load_balancer_cc_probe" {
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.resource_group.name}"
+  loadbalancer_id     = "${azurerm_lb.load_balancer.id}"
+  name                = "ControlCenter"
+  port                = 9021
+}
 
 #######################################################################################################
 # Storage Account
