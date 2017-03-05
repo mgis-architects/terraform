@@ -1,0 +1,17 @@
+# Reference existing vnet
+vnet_rg_name="resourceGroupContainingTheMasterVNET"
+vnet_name="MasterVNETname"
+subnet_name="subnetNameForThisDeployment"
+address_prefix="CDIRsubnet, e.g. 10.135.10.0/24"
+#
+location="West Europe"
+rg_name="resourceGroupForThisDeployment"
+prefix="prefixForAllResources e.g. uidoradb1"
+storage_acc="storageAccountForThisDeployment, e.g. uidoradb1sa"
+storage_type="Premium_LRS"
+adminuser="adminUserId e.g. uid"
+vmsize="Standard_DS3_v2"
+vmpublisher = "Oracle"
+vmoffer = "Oracle-Linux"
+vmsku = "7.2"
+vmversion = "latest"

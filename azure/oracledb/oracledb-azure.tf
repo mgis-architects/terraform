@@ -225,17 +225,6 @@ resource "azurerm_virtual_machine" "vm" {
 
   #######################################################################
   provisioner "file" {
-     source = "../../../ogg4bd/ogg4bd-build.sh"
-     destination = "/home/${var.adminuser}/ogg4bd-build.sh"
-  }
-  
-  provisioner "file" {
-     source = "~/ogg4bd-build.ini"
-     destination = "/home/${var.adminuser}/ogg4bd-build.ini"
-  }
-  
-  #######################################################################
-  provisioner "file" {
      source = "../../../oracledb/oracledb-testsuite.sh"
      destination = "/home/${var.adminuser}/oracledb-testsuite.sh"
   }
