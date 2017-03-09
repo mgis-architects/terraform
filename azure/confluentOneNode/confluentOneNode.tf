@@ -267,10 +267,10 @@ resource "azurerm_virtual_machine" "zkvm1" {
      destination = "/home/${var.adminuser}/confluentOneNode-build.ini" 
    } 
 
-   provisioner "remote-exec" { 
-     inline = [  
-        "sudo /bin/bash /home/${var.adminuser}/confluentOneNode-build.sh /home/${var.adminuser}/confluentOneNode-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.confluentOneNode-build.log"
-     ] 
-   } 
+  # provisioner "remote-exec" { 
+  #   inline = [  
+  #      "sudo /bin/bash /home/${var.adminuser}/confluentOneNode-build.sh /home/${var.adminuser}/confluentOneNode-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.confluentOneNode-build.log"
+  #   ] 
+  # } 
 
 }
