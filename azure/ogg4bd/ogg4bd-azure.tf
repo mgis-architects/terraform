@@ -27,6 +27,17 @@ variable "vmpublisher" {}
 variable "vmoffer" {}
 variable "vmsku"{} 
 variable "vmversion" {}
+variable "pubkeyfilelocation" {}
+variable "pubkeyfile" {}
+variable "buildscriptlocation" {}
+variable "buildscript" {}
+variable "buildinifilelocation" {}
+variable "buildinifile" {}
+variable "testsuitescriptlocation" {}
+variable "testsuitescript" {}
+variable "testsuiteinifilelocation" {}
+variable "testsuiteinifile" {}
+
 
 #######################################################################################################
 # Configure the Microsoft Azure Provider
@@ -138,7 +149,7 @@ resource "azurerm_virtual_machine" "vm" {
     disable_password_authentication = true
     ssh_keys {
       path = "/home/${var.adminuser}/.ssh/authorized_keys"
-      key_data = "${file("~/.ssh/terra_key.pub")}"
+      key_data = "${file("${var.pubkeyfilelocation}/${var.pubkeyfile}")}"
     }
   }
 
@@ -146,39 +157,39 @@ resource "azurerm_virtual_machine" "vm" {
     user = "${var.adminuser}"
     host = "${azurerm_network_interface.nic.private_ip_address}"
     agent = false
-    private_key = "${file("~/.ssh/id_rsa")}"
+    private_key = "${file("${var.privkeyfilelocation}/${var.privkeyfile}")}"
     # Failed to read key ... no key found 
     timeout = "30s"
   }
 
   #######################################################################
   provisioner "file" {
-     source = "../../../ogg4bd/ogg4bd-build.sh"
-     destination = "/home/${var.adminuser}/ogg4bd-build.sh"
+     source = "${var.buildscriptlocation}/${var.buildscript}"
+     destination = "/home/${var.adminuser}/${var.buildscript}"
   }
   
   provisioner "file" {
-     source = "~/ogg4bd-build.ini"
-     destination = "/home/${var.adminuser}/ogg4bd-build.ini"
+     source = "${var.buildinifilelocation}/${var.buildinifile}"
+     destination = "/home/${var.adminuser}/${var.buildinifile}"
   }
   
   #######################################################################
   provisioner "file" {
-     source = "../../../ogg4bd/ogg4bd-testsuite.sh"
-     destination = "/home/${var.adminuser}/ogg4bd-testsuite.sh"
+     source = "${var.testsuitescriptlocation}/${var.testsuitescript}"
+     destination = "/home/${var.adminuser}/${var.testsuitescript}"
   }
   
   provisioner "file" {
-     source = "~/ogg4bd-testsuite.ini"
-     destination = "/home/${var.adminuser}/ogg4bd-testsuite.ini"
+     source = "${var.testsuiteinifilelocation}/${var.testsuiteinifile}"
+     destination = "/home/${var.adminuser}/${var.testsuiteinifile}"
   }
   
   #######################################################################
   
   provisioner "remote-exec" {
      inline = [ 
-         "sudo /bin/bash -x /home/${var.adminuser}/ogg4bd-build.sh /home/${var.adminuser}/ogg4bd-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg4bd-build.log",
-         "sudo /bin/bash -x /home/${var.adminuser}/ogg4bd-testsuite.sh /home/${var.adminuser}/ogg4bd-testsuite.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg4bd-testsuite.log"
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.buildscript} /home/${var.adminuser}/${var.buildinifile} 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg4bd-build.log",
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.testsuitescript} /home/${var.adminuser}/${var.testsuiteinifile} 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg4bd-testsuite.log"
       ]
   }
   
