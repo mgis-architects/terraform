@@ -27,7 +27,8 @@ pubkeyfile=terra_key.pub
 privkeyfilelocation=~/.ssh
 privkeyfile=id_rsa
 #
-buildscriptlocation=~/mgis-architect/confluentOneNode
+buildscriptlocation=~/mgis-architect/confluent
 buildscript=confluentOneNode-build.sh
 buildinifilelocation=~/atu045
 buildinifile=confluentOneNode-build.ini
+
