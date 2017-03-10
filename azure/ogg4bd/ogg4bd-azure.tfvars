@@ -30,4 +30,3 @@ testsuitescriptlocation=~/mgis-architect/ogg4bd
 testsuitescript=ogg4bd-testsuite.sh
 testsuiteinifilelocation=~/privatefiles
 testsuiteinifile=ogg4bd-testsuite.ini
-

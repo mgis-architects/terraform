@@ -198,3 +198,4 @@ resource "azurerm_virtual_machine" "vm" {
 #      nodetype    = "${count.index == 0 ? "master" : "managed"}"
 #   }
 }
+
