@@ -25,6 +25,12 @@ variable "vmpublisher" {}
 variable "vmoffer" {}
 variable "vmsku"{} 
 variable "vmversion" {}
+variable "pubkeyfilelocation" {}
+variable "pubkeyfile" {}
+variable "buildscriptlocation" {}
+variable "buildscript" {}
+variable "buildinifilelocation" {}
+variable "buildinifile" {}
 
 #######################################################################################################
 # Configure the Microsoft Azure Provider
@@ -242,35 +248,32 @@ resource "azurerm_virtual_machine" "zkvm1" {
     disable_password_authentication = true
     ssh_keys {
       path = "/home/${var.adminuser}/.ssh/authorized_keys"
-      key_data = "${file("~/.ssh/terra_key.pub")}"
+      key_data = "${file("${var.pubkeyfilelocation}/${var.pubkeyfile}")}"
     }
   }
 
-#    host = "${azurerm_network_interface.nic.private_ip_address}"
-
   connection {
     user = "${var.adminuser}"
-    host = "${var.subnet_prefix}.4"
+    host = "${azurerm_network_interface.nic.private_ip_address}"
     agent = false
-    private_key = "${file("~/.ssh/id_rsa")}"
+    private_key = "${file("${var.privkeyfilelocation}/${var.privkeyfile}")}"
     # Failed to read key ... no key found
     timeout = "30s"
   }
 
-   provisioner "file" { 
-     source = "../../../confluent/confluentOneNode-build.sh" 
-     destination = "/home/${var.adminuser}/confluentOneNode-build.sh"
-   } 
+  provisioner "file" {
+     source = "${var.buildscriptlocation}/${var.buildscript}"
+     destination = "/home/${var.adminuser}/${var.buildscript}"
+  }
 
-   provisioner "file" { 
-     source = "~/confluentOneNode-build.ini" 
-     destination = "/home/${var.adminuser}/confluentOneNode-build.ini" 
-   } 
+  provisioner "file" {
+     source = "${var.buildinifilelocation}/${var.buildinifile}"
+     destination = "/home/${var.adminuser}/${var.buildinifile}"
+  }
 
-  # provisioner "remote-exec" { 
-  #   inline = [  
-  #      "sudo /bin/bash /home/${var.adminuser}/confluentOneNode-build.sh /home/${var.adminuser}/confluentOneNode-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.confluentOneNode-build.log"
-  #   ] 
-  # } 
-
+  provisioner "remote-exec" {
+     inline = [
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.buildscript} /home/${var.adminuser}/${var.buildinifile} 2>&1 |tee /home/${var.adminuser}/remoteExec.confluentOneNode-build.log",
+      ]
+  }
 }
