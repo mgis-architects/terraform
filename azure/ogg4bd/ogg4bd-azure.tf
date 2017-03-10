@@ -27,6 +27,8 @@ variable "vmpublisher" {}
 variable "vmoffer" {}
 variable "vmsku"{} 
 variable "vmversion" {}
+variable "privkeyfilelocation" {}
+variable "privkeyfile" {}
 variable "pubkeyfilelocation" {}
 variable "pubkeyfile" {}
 variable "buildscriptlocation" {}
