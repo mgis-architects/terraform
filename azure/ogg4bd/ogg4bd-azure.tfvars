@@ -16,17 +16,18 @@ vmoffer = "RHEL"
 vmsku = "7.3"
 vmversion = "latest"
 #
-pubkeyfilelocation=~/.ssh
-pubkeyfile=terra_key.pub
-privkeyfilelocation=~/.ssh
-privkeyfile=id_rsa
+pubkeyfilelocation="~/.ssh"
+pubkeyfile="terra_key.pub"
+privkeyfilelocation="~/.ssh"
+privkeyfile="id_rsa"
 #
-buildscriptlocation=~/mgis-architect/ogg4bd
-buildscript=ogg4bd-build.sh
-buildinifilelocation=~/privatefiles
-buildinifile=ogg4bd-build.ini
+buildscriptlocation="~/mgis-architect/ogg4bd"
+buildscript="ogg4bd-build.sh"
+buildinifilelocation="~/privatefiles"
+buildinifile="ogg4bd-build.ini"
 #
-testsuitescriptlocation=~/mgis-architect/ogg4bd
-testsuitescript=ogg4bd-testsuite.sh
-testsuiteinifilelocation=~/privatefiles
-testsuiteinifile=ogg4bd-testsuite.ini
+testsuitescriptlocation="~/mgis-architect/ogg4bd"
+testsuitescript="ogg4bd-testsuite.sh"
+testsuiteinifilelocation="~/privatefiles"
+testsuiteinifile="ogg4bd-testsuite.ini"
+
