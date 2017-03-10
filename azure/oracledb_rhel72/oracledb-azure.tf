@@ -1,1 +1,0 @@
-../oracledb/oracledb-azure.tf
