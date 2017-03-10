@@ -1,5 +1,5 @@
-## single cassandra server
-## private IP only 
+## three node cassandra cluster
+## private IP only
 ## 100GB /u01 disk
 ##
 ## Customised ini file must be in your home directory
@@ -25,7 +25,7 @@ variable "adminuser" {}
 variable "vmsize" {}
 variable "vmpublisher" {}
 variable "vmoffer" {}
-variable "vmsku"{} 
+variable "vmsku"{}
 variable "vmversion" {}
 
 #######################################################################################################
@@ -44,8 +44,8 @@ provider "azurerm" {
 resource "azurerm_resource_group" "resource_group" {
     name     = "${var.rg_name}"
     location = "${var.location}"
-    lifecycle { 
-	prevent_destroy=true
+    lifecycle {
+        prevent_destroy=true
     }
 }
 
@@ -67,12 +67,34 @@ resource "azurerm_subnet" "subnet" {
   address_prefix       = "${var.address_prefix}"
 }
 
-resource "azurerm_network_interface" "nic" {
-  name                = "${var.prefix}-ip-priv"
+resource "azurerm_network_interface" "nic0" {
+  name                = "${var.prefix}-ip0-priv"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.resource_group.name}"
   ip_configuration {
-    name                          = "${var.prefix}-ip-priv"
+    name                          = "${var.prefix}-ip0-priv"
+    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    private_ip_address_allocation = "dynamic"
+  }
+}
+
+resource "azurerm_network_interface" "nic1" {
+  name                = "${var.prefix}-ip1-priv"
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.resource_group.name}"
+  ip_configuration {
+    name                          = "${var.prefix}-ip1-priv"
+    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    private_ip_address_allocation = "dynamic"
+  }
+}
+
+resource "azurerm_network_interface" "nic2" {
+  name                = "${var.prefix}-ip2-priv"
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.resource_group.name}"
+  ip_configuration {
+    name                          = "${var.prefix}-ip2-priv"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "dynamic"
   }
@@ -99,13 +121,13 @@ resource "azurerm_storage_container" "sc1" {
   container_access_type = "private"
 }
 
-resource "azurerm_virtual_machine" "vm" {
+resource "azurerm_virtual_machine" "vm-0" {
   name                  = "${var.prefix}-vm-0"
   location              = "${var.location}"
   resource_group_name   = "${azurerm_resource_group.resource_group.name}"
-  network_interface_ids = ["${azurerm_network_interface.nic.id}"]
+  network_interface_ids = ["${azurerm_network_interface.nic0.id}"]
   vm_size               = "${var.vmsize}"
-  
+
   storage_image_reference {
     publisher = "${var.vmpublisher}"
     offer     = "${var.vmoffer}"
@@ -144,10 +166,10 @@ resource "azurerm_virtual_machine" "vm" {
 
   connection {
     user = "${var.adminuser}"
-    host = "${azurerm_network_interface.nic.private_ip_address}"
+    host = "${azurerm_network_interface.nic0.private_ip_address}"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
-    # Failed to read key ... no key found 
+    # Failed to read key ... no key found
     timeout = "30s"
   }
 
@@ -156,28 +178,28 @@ resource "azurerm_virtual_machine" "vm" {
      source = "../../../cassandra/cassandra-build.sh"
      destination = "/home/${var.adminuser}/cassandra-build.sh"
   }
-  
+
   provisioner "file" {
      source = "~/cassandra-build.ini"
      destination = "/home/${var.adminuser}/cassandra-build.ini"
   }
-  
+
   provisioner "remote-exec" {
-     inline = [ 
+     inline = [
          "sudo /bin/bash -x /home/${var.adminuser}/cassandra-build.sh /home/${var.adminuser}/cassandra-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.cassandra-build.log",
          "sudo /bin/bash -x /home/${var.adminuser}/cassandra-testsuite.sh /home/${var.adminuser}/cassandra-testsuite.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.cassandra-testsuite.log"
       ]
   }
-  
+
 }
 
-resource "azurerm_virtual_machine" "vm" {
+resource "azurerm_virtual_machine" "vm-1" {
   name                  = "${var.prefix}-vm-1"
   location              = "${var.location}"
   resource_group_name   = "${azurerm_resource_group.resource_group.name}"
-  network_interface_ids = ["${azurerm_network_interface.nic.id}"]
+  network_interface_ids = ["${azurerm_network_interface.nic1.id}"]
   vm_size               = "${var.vmsize}"
-  
+
   storage_image_reference {
     publisher = "${var.vmpublisher}"
     offer     = "${var.vmoffer}"
@@ -216,10 +238,10 @@ resource "azurerm_virtual_machine" "vm" {
 
   connection {
     user = "${var.adminuser}"
-    host = "${azurerm_network_interface.nic.private_ip_address}"
+    host = "${azurerm_network_interface.nic1.private_ip_address}"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
-    # Failed to read key ... no key found 
+    # Failed to read key ... no key found
     timeout = "30s"
   }
 
@@ -228,27 +250,27 @@ resource "azurerm_virtual_machine" "vm" {
      source = "../../../cassandra/cassandra-build.sh"
      destination = "/home/${var.adminuser}/cassandra-build.sh"
   }
-  
+
   provisioner "file" {
      source = "~/cassandra-build.ini"
      destination = "/home/${var.adminuser}/cassandra-build.ini"
   }
-  
+
   provisioner "remote-exec" {
-     inline = [ 
+     inline = [
          "sudo /bin/bash -x /home/${var.adminuser}/cassandra-build.sh /home/${var.adminuser}/cassandra-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.cassandra-build.log",
          "sudo /bin/bash -x /home/${var.adminuser}/cassandra-testsuite.sh /home/${var.adminuser}/cassandra-testsuite.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.cassandra-testsuite.log"
       ]
   }
 }
 
-resource "azurerm_virtual_machine" "vm" {
+resource "azurerm_virtual_machine" "vm-2" {
   name                  = "${var.prefix}-vm-2"
   location              = "${var.location}"
   resource_group_name   = "${azurerm_resource_group.resource_group.name}"
-  network_interface_ids = ["${azurerm_network_interface.nic.id}"]
+  network_interface_ids = ["${azurerm_network_interface.nic2.id}"]
   vm_size               = "${var.vmsize}"
-  
+
   storage_image_reference {
     publisher = "${var.vmpublisher}"
     offer     = "${var.vmoffer}"
@@ -287,10 +309,10 @@ resource "azurerm_virtual_machine" "vm" {
 
   connection {
     user = "${var.adminuser}"
-    host = "${azurerm_network_interface.nic.private_ip_address}"
+    host = "${azurerm_network_interface.nic2.private_ip_address}"
     agent = false
     private_key = "${file("~/.ssh/id_rsa")}"
-    # Failed to read key ... no key found 
+    # Failed to read key ... no key found
     timeout = "30s"
   }
 
@@ -299,14 +321,14 @@ resource "azurerm_virtual_machine" "vm" {
      source = "../../../cassandra/cassandra-build.sh"
      destination = "/home/${var.adminuser}/cassandra-build.sh"
   }
-  
+
   provisioner "file" {
      source = "~/cassandra-build.ini"
      destination = "/home/${var.adminuser}/cassandra-build.ini"
   }
-  
+
   provisioner "remote-exec" {
-     inline = [ 
+     inline = [
          "sudo /bin/bash -x /home/${var.adminuser}/cassandra-build.sh /home/${var.adminuser}/cassandra-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.cassandra-build.log",
          "sudo /bin/bash -x /home/${var.adminuser}/cassandra-testsuite.sh /home/${var.adminuser}/cassandra-testsuite.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.cassandra-testsuite.log"
       ]
