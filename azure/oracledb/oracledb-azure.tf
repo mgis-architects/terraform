@@ -29,6 +29,29 @@ variable "vmpublisher" {}
 variable "vmoffer" {}
 variable "vmsku"{} 
 variable "vmversion" {}
+variable "privkeyfilelocation" {}
+variable "privkeyfile" {}
+variable "pubkeyfilelocation" {}
+variable "pubkeyfile" {}
+#
+variable "buildscriptlocation" {}
+variable "buildscript" {}
+variable "buildinifilelocation" {}
+variable "buildinifile" {}
+variable "testsuitescriptlocation" {}
+variable "testsuitescript" {}
+variable "testsuiteinifilelocation" {}
+variable "testsuiteinifile" {}
+#
+variable "buildscript2location" {}
+variable "buildscript2" {}
+variable "buildinifile2location" {}
+variable "buildinifile2" {}
+variable "testsuitescript2location" {}
+variable "testsuitescript2" {}
+variable "testsuiteinifile2location" {}
+variable "testsuiteinifile2" {}
+
 
 #######################################################################################################
 # Configure the Microsoft Azure Provider
@@ -181,79 +204,63 @@ resource "azurerm_virtual_machine" "vm" {
   os_profile {
     computer_name  = "${var.prefix}-vm-0"
     admin_username = "${var.adminuser}"
-    admin_password = "not@used@hopefully!"
+    admin_password = "Not@used@hopefully!"
   }
 
-  os_profile_linux_config {
-    disable_password_authentication = true
-    ssh_keys {
-      path = "/home/${var.adminuser}/.ssh/authorized_keys"
-      key_data = "${file("~/.ssh/terra_key.pub")}"
-    }
+
+  #######################################################################
+  provisioner "file" {
+     source = "${var.buildscriptlocation}/${var.buildscript}"
+     destination = "/home/${var.adminuser}/${var.buildscript}"
   }
 
-  connection {
-    user = "${var.adminuser}"
-    host = "${azurerm_network_interface.nic.private_ip_address}"
-    agent = false
-    private_key = "${file("~/.ssh/id_rsa")}"
-    # Failed to read key ... no key found 
-    timeout = "30s"
+  provisioner "file" {
+     source = "${var.buildinifilelocation}/${var.buildinifile}"
+     destination = "/home/${var.adminuser}/${var.buildinifile}"
   }
 
   #######################################################################
   provisioner "file" {
-     source = "../../../oracledb/oracledb-build.sh"
-     destination = "/home/${var.adminuser}/oracledb-build.sh"
+     source = "${var.testsuitescriptlocation}/${var.testsuitescript}"
+     destination = "/home/${var.adminuser}/${var.testsuitescript}"
   }
 
   provisioner "file" {
-     source = "~/oracledb-build.ini"
-     destination = "/home/${var.adminuser}/oracledb-build.ini"
-  }
-    
-  #######################################################################
-  provisioner "file" {
-     source = "../../../ogg/ogg-build.sh"
-     destination = "/home/${var.adminuser}/ogg-build.sh"
+     source = "${var.testsuiteinifilelocation}/${var.testsuiteinifile}"
+     destination = "/home/${var.adminuser}/${var.testsuiteinifile}"
   }
 
-  provisioner "file" {
-     source = "~/ogg-build.ini"
-     destination = "/home/${var.adminuser}/ogg-build.ini"
-  }
 
   #######################################################################
   provisioner "file" {
-     source = "../../../oracledb/oracledb-testsuite.sh"
-     destination = "/home/${var.adminuser}/oracledb-testsuite.sh"
+     source = "${var.buildscript2location}/${var.buildscript2}"
+     destination = "/home/${var.adminuser}/${var.buildscript2}"
   }
-      
+
   provisioner "file" {
-     source = "~/oracledb-testsuite.ini"
-     destination = "/home/${var.adminuser}/oracledb-testsuite.ini"
+     source = "${var.buildinifile2location}/${var.buildinifile2}"
+     destination = "/home/${var.adminuser}/${var.buildinifile2}"
   }
 
   #######################################################################
   provisioner "file" {
-     source = "../../../ogg/ogg-testsuite.sh"
-     destination = "/home/${var.adminuser}/ogg-testsuite.sh"
+     source = "${var.testsuitescript2location}/${var.testsuitescript2}"
+     destination = "/home/${var.adminuser}/${var.testsuitescript2}"
   }
 
   provisioner "file" {
-     source = "~/ogg-testsuite.ini"
-     destination = "/home/${var.adminuser}/ogg-testsuite.ini"
+     source = "${var.testsuiteinifile2location}/${var.testsuiteinifile2}"
+     destination = "/home/${var.adminuser}/${var.testsuiteinifile2}"
   }
-  
+
   #######################################################################
   
   provisioner "remote-exec" {
      inline = [ 
-        "sudo /bin/bash /home/${var.adminuser}/oracledb-build.sh /home/${var.adminuser}/oracledb-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.oracledb-build.log",
-         "sudo /bin/bash /home/${var.adminuser}/ogg-build.sh /home/${var.adminuser}/ogg-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg-build.log",
-         "sudo /bin/bash /home/${var.adminuser}/ogg4bd-build.sh /home/${var.adminuser}/ogg4bd-build.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg4bd-build.log",
-         "sudo /bin/bash /home/${var.adminuser}/oracledb-testsuite.sh /home/${var.adminuser}/oracledb-testsuite.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.oracledb-testsuite.log",
-         "sudo /bin/bash /home/${var.adminuser}/ogg-testsuite.sh /home/${var.adminuser}/ogg-testsuite.ini 2>&1 |tee /home/${var.adminuser}/remoteExec.ogg-testsuite.log"
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.buildscript} /home/${var.adminuser}/${var.buildinifile} 2>&1 |tee /home/${var.adminuser}/remoteExec.1-build.log",
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.buildscript2} /home/${var.adminuser}/${var.buildinifile2} 2>&1 |tee /home/${var.adminuser}/remoteExec.2-build.log",
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.testsuitescript} /home/${var.adminuser}/${var.testsuiteinifile} 2>&1 |tee /home/${var.adminuser}/remoteExec.1-testsuite.log",
+         "sudo /bin/bash -x /home/${var.adminuser}/${var.testsuitescript2} /home/${var.adminuser}/${var.testsuiteinifile2} 2>&1 |tee /home/${var.adminuser}/remoteExec.2-testsuite.log"
       ]
   }
   
