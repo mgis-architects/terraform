@@ -160,7 +160,7 @@ resource "azurerm_network_interface" "nic_G" {
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "static"
     private_ip_address            = "${var.subnet_prefix}.10"
-    load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_pool.id}"]
+    load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.backend_controlcentre_pool.id}"]
   }
 }
 
@@ -222,6 +222,14 @@ resource "azurerm_lb_backend_address_pool" "backend_pool" {
   name                = "${var.prefix}-backend_address_pool"
 }
 
+# MJM
+resource "azurerm_lb_backend_address_pool" "backend_controlcentre_pool" {
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.resource_group.name}"
+  loadbalancer_id     = "${azurerm_lb.load_balancer.id}"
+  name                = "${var.prefix}-backend_controlcentre_pool"
+}
+
 resource "azurerm_lb_rule" "load_balancer_http_rule" {
   location                       = "${var.location}"
   resource_group_name            = "${azurerm_resource_group.resource_group.name}"
@@ -250,6 +258,22 @@ resource "azurerm_lb_rule" "load_balancer_https_rule" {
   depends_on                     = ["azurerm_lb_probe.load_balancer_probe"]
 }
 
+# MJM
+resource "azurerm_lb_rule" "load_balancer_controlcentre_rule" {
+  location                       = "${var.location}"
+  resource_group_name            = "${azurerm_resource_group.resource_group.name}"
+  loadbalancer_id                = "${azurerm_lb.load_balancer.id}"
+  name                           = "ControlCentreRule"
+  protocol                       = "Tcp"
+  frontend_port                  = 9021
+  backend_port                   = 9021
+  frontend_ip_configuration_name = "${var.prefix}_pubip-frontend"
+  backend_address_pool_id        = "${azurerm_lb_backend_address_pool.backend_controlcentre_pool.id}"
+  probe_id                       = "${azurerm_lb_probe.load_balancer_controlcentre_probe.id}"
+  depends_on                     = ["azurerm_lb_probe.load_balancer_controlcentre_probe"]
+}
+
+
 resource "azurerm_lb_probe" "load_balancer_probe" {
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.resource_group.name}"
@@ -257,6 +281,15 @@ resource "azurerm_lb_probe" "load_balancer_probe" {
   name                = "HTTP"
   port                = 80
 }  
+
+# MJM
+resource "azurerm_lb_probe" "load_balancer_controlcentre_probe" {
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.resource_group.name}"
+  loadbalancer_id     = "${azurerm_lb.load_balancer.id}"
+  name                = "ControlCentre"
+  port                = 9021
+}
 
 
 #######################################################################################################
@@ -345,11 +378,11 @@ resource "azurerm_virtual_machine" "zkvm1" {
      destination = "/home/${var.adminuser}/standalone-server-build.ini" 
    } 
 
-  # provisioner "remote-exec" { 
-  #   inline = [  
-  #      "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
-  #   ] 
-  # } 
+   #provisioner "remote-exec" { 
+   #  inline = [  
+   #     "sudo /bin/bash /home/${var.adminuser}/standalone-zookeeper-server.sh /home/${var.adminuser}/standalone-server-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-zookeeper-server.log"
+   #  ] 
+   #} 
 
 }
 
@@ -418,11 +451,11 @@ resource "azurerm_virtual_machine" "zkvm2" {
      destination = "/home/${var.adminuser}/standalone-server-build.ini"
    }
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #      "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
-  #   ]
-  # }
+   #provisioner "remote-exec" {
+   #  inline = [
+   #     "sudo /bin/bash /home/${var.adminuser}/standalone-zookeeper-server.sh /home/${var.adminuser}/standalone-server-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-zookeeper-server.log"
+   #  ]
+   #}
 
 }
 
@@ -490,11 +523,11 @@ resource "azurerm_virtual_machine" "zkvm3" {
      destination = "/home/${var.adminuser}/standalone-server-build.ini"
    }
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #      "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
-  #   ]
-  # }
+   #provisioner "remote-exec" {
+   #  inline = [
+   #     "sudo /bin/bash /home/${var.adminuser}/standalone-zookeeper-server.sh /home/${var.adminuser}//standalone-server-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-zookeeper-server.log"
+   #  ]
+   #}
 
 }
 
@@ -554,6 +587,16 @@ resource "azurerm_virtual_machine" "kfvm1" {
   }
 
    provisioner "file" {
+     source = "../../../confluent/kafka-generate-ssl.sh"
+     destination = "/home/${var.adminuser}/kafka-generate-ssl.sh"
+   }
+
+   provisioner "file" {
+     source = "~/kafka-generate-ssl.ini"
+     destination = "/home/${var.adminuser}/kafka-generate-ssl.ini"
+   }
+
+   provisioner "file" {
      source = "../../../confluent/standalone-kafka-server.sh"
      destination = "/home/${var.adminuser}/standalone-kafka-server.sh"
    }
@@ -563,9 +606,9 @@ resource "azurerm_virtual_machine" "kfvm1" {
      destination = "/home/${var.adminuser}/standalone-server-build.ini"
    }
 #
-  # provisioner "remote-exec" {
+  #provisioner "remote-exec" {
   #   inline = [
-  #      "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
+  #      "sudo /bin/bash /home/${var.adminuser}/standalone-kafka-server.sh /home/${var.adminuser}/standalone-server-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-kafka-server.log"
   #   ]
   # }
 
@@ -627,6 +670,16 @@ resource "azurerm_virtual_machine" "kfvm2" {
   }
 
    provisioner "file" {
+     source = "../../../confluent/kafka-generate-ssl.sh"
+     destination = "/home/${var.adminuser}/kafka-generate-ssl.sh"
+   }
+
+   provisioner "file" {
+     source = "~/kafka-generate-ssl.ini"
+     destination = "/home/${var.adminuser}/kafka-generate-ssl.ini"
+   }
+
+   provisioner "file" {
      source = "../../../confluent/standalone-kafka-server.sh"
      destination = "/home/${var.adminuser}/standalone-kafka-server.sh"
    }
@@ -636,11 +689,11 @@ resource "azurerm_virtual_machine" "kfvm2" {
      destination = "/home/${var.adminuser}/standalone-server-build.ini"
    }
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #      "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
-  #   ]
-  # }
+   #provisioner "remote-exec" {
+   #  inline = [
+   #     "sudo /bin/bash /home/${var.adminuser}/standalone-kafka-server.sh /home/${var.adminuser}/standalone-server-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-kafka-server.log"
+   #  ]
+   #}
 
 }
 
@@ -700,6 +753,16 @@ resource "azurerm_virtual_machine" "kfvm3" {
   }
 
    provisioner "file" {
+     source = "../../../confluent/kafka-generate-ssl.sh"
+     destination = "/home/${var.adminuser}/kafka-generate-ssl.sh"
+   }
+
+   provisioner "file" {
+     source = "~/kafka-generate-ssl.ini"
+     destination = "/home/${var.adminuser}/kafka-generate-ssl.ini"
+   }
+
+   provisioner "file" {
      source = "../../../confluent/standalone-kafka-server.sh"
      destination = "/home/${var.adminuser}/standalone-kafka-server.sh"
    }
@@ -711,7 +774,7 @@ resource "azurerm_virtual_machine" "kfvm3" {
 
   # provisioner "remote-exec" {
   #   inline = [
-  #      "sudo /bin/bash /home/${var.adminuser}/kafka-build.sh /home/${var.adminuser}/confluent-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.kafka-build.log"
+  #      "sudo /bin/bash /home/${var.adminuser}/standalone-kafka-server.sh /home/${var.adminuser}/standalone-server-build.ini 3 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-kafka-server.log"
   #   ]
   # }
 
@@ -772,21 +835,21 @@ resource "azurerm_virtual_machine" "prvm1" {
     timeout = "30s"
   }
 
- #  provisioner "file" {
- #    source = "../../../confluent/schema-build.sh"
- #    destination = "/home/${var.adminuser}/schema-build.sh"
- #  }
+  provisioner "file" {
+    source = "../../../confluent/standalone-OneNode-server.sh"
+    destination = "/home/${var.adminuser}/standalone-OneNode-server.sh"
+  }
 
- #  provisioner "file" {
- #    source = "~/confluent-build.ini"
- #    destination = "/home/${var.adminuser}/confluent-build.ini"
- #  }
+  provisioner "file" {
+    source = "~/standalone-server-build.ini"
+    destination = "/home/${var.adminuser}/standalone-server-build.ini"
+  }
 
- #  provisioner "remote-exec" {
- #    inline = [
- #       "sudo /bin/bash /home/${var.adminuser}/schema-build.sh /home/${var.adminuser}/confluent-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.schema-build.log"
- #    ]
- #  }
+  #provisioner "remote-exec" {
+  #  inline = [
+  #     "sudo /bin/bash /home/${var.adminuser}/standalone-OneNode-server.sh /home/${var.adminuser}/standalone-server-build.ini 1 connect,rest 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-OneNode-server.log"
+  #  ]
+  #}
 
 }
 
@@ -844,21 +907,23 @@ resource "azurerm_virtual_machine" "prvm2" {
     timeout = "30s"
   }
 
- #  provisioner "file" {
- #    source = "../../../confluent/schema-build.sh"
- #    destination = "/home/${var.adminuser}/schema-build.sh"
- #  }
+  provisioner "file" {
+    source = "../../../confluent/standalone-OneNode-server.sh"
+    destination = "/home/${var.adminuser}/standalone-OneNode-server.sh"
+  }
 
- #  provisioner "file" {
- #    source = "~/confluent-build.ini"
- #    destination = "/home/${var.adminuser}/confluent-build.ini"
- #  }
+  provisioner "file" {
+    source = "~/standalone-server-build.ini"
+    destination = "/home/${var.adminuser}/standalone-server-build.ini"
+  }
 
- #  provisioner "remote-exec" {
- #    inline = [
- #       "sudo /bin/bash /home/${var.adminuser}/schema-build.sh /home/${var.adminuser}/confluent-build.ini 2 2>&1 |tee /home/${var.adminuser}/remoteExec.schema-build.log"
- #    ]
- #  }
+  #provisioner "remote-exec" {
+  #  inline = [
+  #     "sudo /bin/bash /home/${var.adminuser}/standalone-OneNode-server.sh /home/${var.adminuser}/standalone-server-build.ini 2 connect,schema,rest 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-OneNode-server.log"
+  #  ]
+  #}
+ 
+
 
 }
 
@@ -916,21 +981,21 @@ resource "azurerm_virtual_machine" "prvm3" {
     timeout = "30s"
   }
 
-  # provisioner "file" {
-  #   source = "../../../confluent/cc-build.sh"
-  #   destination = "/home/${var.adminuser}/cc-build.sh"
-  # }
+  provisioner "file" {
+    source = "../../../confluent/standalone-OneNode-server.sh"
+    destination = "/home/${var.adminuser}/standalone-OneNode-server.sh"
+  }
 
-  # provisioner "file" {
-  #   source = "~/confluent-build.ini"
-  #   destination = "/home/${var.adminuser}/confluent-build.ini"
-  # }
+  provisioner "file" {
+    source = "~/standalone-server-build.ini"
+    destination = "/home/${var.adminuser}/standalone-server-build.ini"
+  }
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #      "sudo /bin/bash /home/${var.adminuser}/cc-build.sh /home/${var.adminuser}/confluent-build.ini 1 2>&1 |tee /home/${var.adminuser}/remoteExec.cc-build.log"
-  #   ]
-  # }
+  #provisioner "remote-exec" {
+  #  inline = [
+  #     "sudo /bin/bash /home/${var.adminuser}/standalone-OneNode-server.sh /home/${var.adminuser}/standalone-server-build.ini 3 connect,schema 2>&1 |tee /home/${var.adminuser}/remoteExec.standalone-OneNode-server.log"
+  #  ]
+  #}
 
 }
 
